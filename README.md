@@ -19,5 +19,7 @@ Based on
 *   Selected tab is not saved
 
 ### Changelog
+*   Version 0.0.3
+    +   Fixed some bugs
 *   Version 0.0.1
     +   Initial commit
