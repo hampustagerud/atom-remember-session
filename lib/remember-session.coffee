@@ -3,69 +3,117 @@
 module.exports =
 
   activate: (state) ->
+    if atom.config.get('remember-session.tabs').split('&&').length > 0
+      atom.workspaceView.on('pane:attached', restoreTabs)
+
+    attachListeners()
+
+    if atom.project.getPath()?
+      restoreDimensions()
+      return
+
     if !newUser = !atom.config.get('remember-session.new')?
       restoreSession()
-      atom.workspaceView.on('pane:active-item-changed', restoreTabs)
+      atom.workspaceView.on('pane:active-item-changed', selectTab)
+      atom.workspaceView.on('pane:attached', restoreTabs)
       $(window).on 'ready', -> restoreTreeView()
+      $(window).on 'ready', -> restoreTabs()
 
+attachListeners = ->
     $(window).on 'resize', -> saveDimensions()
     $(window).on 'beforeunload', -> saveSession()
-    atom.config.set('remember-session.new', false)
-
-    if newUser
-      windows = 1
-    else
-      windows = atom.config.getInt('remember-session.windows')
-      windows++
-    atom.config.set('remember-session.windows', windows)
 
 saveDimensions = ->
   {x, y, width, height} = atom.getWindowDimensions()
   treeWidth = $('.tree-view-resizer').width()
-  console.log(width)
 
   atom.config.set('remember-session.x', x)
   atom.config.set('remember-session.y', y)
-  atom.config.set('remember-session.width', width)
-  atom.config.set('remember-session.height', height)
+  if width > 0
+    atom.config.set('remember-session.width', width)
+  if height > 0
+    atom.config.set('remember-session.height', height)
   atom.config.set('remember-session.treeWidth', treeWidth)
 
 saveSession = ->
-  if (windows = atom.config.get('remember-session.windows')) != 1
-    return
-  windows--
-  atom.config.set('remember-session.windows', windows)
+  if atom.project.getPath()?
+    atom.config.set('remember-session.path', atom.project.getPath())
+  atom.config.set('remember-session.x', atom.getWindowDimensions().x)
+  atom.config.set('remember-session.y', atom.getWindowDimensions().y)
 
-  atom.config.set('remember-session.path', atom.project.getPath())
   tabs = ''
+  selTab = 0
   atom.workspace.eachEditor((editor) ->
     if editor.getPath()?
-  	  tabs += "&&" + editor.getPath()
+      tabs += "&&" + editor.getPath()
+    else
+      return
+  )
+  selectedTab = 0
+  $('.tab-bar').children('li').each(()->
+    if $(this).hasClass('active')
+      atom.config.set('remember-session.selectedTab', selectedTab)
+    selectedTab++
   )
   tabs = tabs.substr(2)
   atom.config.set('remember-session.tabs', tabs)
 
 restoreSession = ->
-  if (windows = atom.config.get('remember-session.windows')) != 0
-    return
-  {x, y, width, height, path} = atom.config.get('remember-session')
-  if path? and path != '' and path != '.'
-    atom.project.setPath(path)
+  if (path = atom.config.get('remember-session.path'))? and path isnt ''
+    atom.project.setPath(atom.config.get('remember-session.path'))
     atom.config.set('remember-session.path', '')
-  atom.setWindowDimensions
-    'x':x
-    'y':y
-    'width':width
-    'height':height
+  restoreDimensions()
 
-restoreTabs = (event, pane) ->
+restoreDimensions = ->
+  {x, y, width, height, path} = atom.config.get('remember-session')
+  atom.setWindowDimensions
+    'x': x
+    'y': y
+    'width': width
+    'height': height
+
+restoreTabs = ->
   tabs = atom.config.get('remember-session.tabs').split('&&')
-  atom.workspace.getActivePane().destroyItem(pane)
-  atom.workspaceView.off('pane:active-item-changed', restoreTabs)
   for tab in tabs
     atom.workspace.open(tab)
-  atom.config.set('remember-session.tabs', '')
+  $(window).off 'ready', -> restoreTabs()
+
+selectedIndex = 0
+selectTab = (event, item) ->
+  tabs = atom.config.get('remember-session.tabs').split('&&').clean('')
+  if tabs.length > 0 and !item.getPath()?
+    atom.workspace.getActivePane().destroyItem(item)
+  if atom.workspace.getActiveEditor()? and atom.workspace.getActiveEditor().getPath() == tabs[tabs.length - 1]
+    $('.tab-bar').children('li').each(()->
+      selectedTab = atom.config.get('remember-session.selectedTab')
+      if selectedIndex == selectedTab
+        $(this).addClass('active')
+      else
+        $(this).removeClass('active')
+      selectedIndex++
+    )
+    selectedIndex = -1
+    $('.item-views').children('div').each(()->
+      selectedTab = atom.config.get('remember-session.selectedTab')
+      if selectedIndex == selectedTab
+        $(this).css('display', 'flex')
+      else
+        $(this).css('display', 'none')
+      selectedIndex++
+    )
+
+    atom.config.set('remember-session.selectedTab', '')
+    atom.config.set('remember-session.tabs', '')
+    atom.workspaceView.off('pane:active-item-changed', selectTab)
 
 restoreTreeView = ->
   treeWidth = atom.config.get('remember-session.treeWidth')
   $('.tree-view-resizer').width(treeWidth)
+  $(window).off 'ready', -> restoreTreeView()
+
+Array.prototype.clean = (deleteValue) ->
+  for i in [0..this.length]
+    if (this[i] == deleteValue)       
+      this.splice(i, 1);
+      i--;
+  return this;
