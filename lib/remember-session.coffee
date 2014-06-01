@@ -3,27 +3,25 @@
 module.exports =
 
   activate: (state) ->
-    if atom.config.get('remember-session.tabs').split('&&').length > 0
-      atom.workspaceView.on('pane:attached', restoreTabs)
-
     attachListeners()
 
     if atom.project.getPath()?
       restoreDimensions()
       return
 
-    if !newUser = !atom.config.get('remember-session.new')?
+    if atom.config.get('remember-session.path')? or atom.config.get('remember-session.tabs')?
       restoreSession()
       atom.workspaceView.on('pane:active-item-changed', selectTab)
-      atom.workspaceView.on('pane:attached', restoreTabs)
       $(window).on 'ready', -> restoreTreeView()
       $(window).on 'ready', -> restoreTabs()
 
 attachListeners = ->
-    $(window).on 'resize', -> saveDimensions()
-    $(window).on 'beforeunload', -> saveSession()
+  console.log 'Attatch listeners'
+  $(window).on 'resize', -> saveDimensions()
+  $(window).on 'beforeunload', -> saveSession()
 
 saveDimensions = ->
+  console.log 'Save dimensions'
   {x, y, width, height} = atom.getWindowDimensions()
   treeWidth = $('.tree-view-resizer').width()
 
@@ -36,6 +34,7 @@ saveDimensions = ->
   atom.config.set('remember-session.treeWidth', treeWidth)
 
 saveSession = ->
+  console.log 'Save session'
   if atom.project.getPath()?
     atom.config.set('remember-session.path', atom.project.getPath())
   atom.config.set('remember-session.x', atom.getWindowDimensions().x)
@@ -59,12 +58,14 @@ saveSession = ->
   atom.config.set('remember-session.tabs', tabs)
 
 restoreSession = ->
+  console.log 'Restore session'
   if (path = atom.config.get('remember-session.path'))? and path isnt ''
     atom.project.setPath(atom.config.get('remember-session.path'))
     atom.config.set('remember-session.path', '')
   restoreDimensions()
 
 restoreDimensions = ->
+  console.log 'Restore dimensions'
   {x, y, width, height, path} = atom.config.get('remember-session')
   atom.setWindowDimensions
     'x': x
@@ -73,6 +74,7 @@ restoreDimensions = ->
     'height': height
 
 restoreTabs = ->
+  console.log 'Restore tabs'
   tabs = atom.config.get('remember-session.tabs').split('&&')
   for tab in tabs
     atom.workspace.open(tab)
@@ -80,6 +82,7 @@ restoreTabs = ->
 
 selectedIndex = 0
 selectTab = (event, item) ->
+  console.log 'Select tab'
   tabs = atom.config.get('remember-session.tabs').split('&&').clean('')
   if tabs.length > 0 and !item.getPath()?
     atom.workspace.getActivePane().destroyItem(item)
@@ -107,6 +110,7 @@ selectTab = (event, item) ->
     atom.workspaceView.off('pane:active-item-changed', selectTab)
 
 restoreTreeView = ->
+  console.log 'Restore treeview'
   treeWidth = atom.config.get('remember-session.treeWidth')
   $('.tree-view-resizer').width(treeWidth)
   $(window).off 'ready', -> restoreTreeView()
