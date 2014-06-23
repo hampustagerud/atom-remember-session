@@ -1,7 +1,7 @@
 {
   "name": "remember-session",
   "main": "./lib/remember-session",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "description": "A simple package to make Atom remember your previous session",
   "repository": "https://github.com/hampustagerud/atom-remember-session",
   "license": "MIT",
