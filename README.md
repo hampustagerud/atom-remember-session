@@ -18,8 +18,10 @@ Based on
 *   ~~Selected tab is not saved~~ (implemented as of 0.4.0)
 
 ### Changelog
+*	Version 0.5.1
+	-	Fixed a bug that caused Atom to not quit properly
 *   Version 0.5.0
-    +   Fixes bugs that broke all functionality
+    -   Fixed bugs that broke all functionality
 *   Version 0.4.0
     +   Package now remembers which tab was active
     +   Package now handles opening multiple projects better

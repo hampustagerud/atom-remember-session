@@ -1,7 +1,6 @@
 {$} = require 'atom'
 
 module.exports =
-
   activate: (state) ->
     attachListeners()
 
@@ -32,6 +31,7 @@ saveDimensions = ->
   if height > 0
     atom.config.set('remember-session.height', height)
   atom.config.set('remember-session.treeWidth', treeWidth)
+  $(window).off 'beforeunload', -> saveSession()
 
 saveSession = ->
   console.log 'Save session'
@@ -46,7 +46,7 @@ saveSession = ->
     if editor.getPath()?
       tabs += "&&" + editor.getPath()
     else
-      return
+      return true
   )
   selectedTab = 0
   $('.tab-bar').children('li').each(()->
@@ -56,6 +56,7 @@ saveSession = ->
   )
   tabs = tabs.substr(2)
   atom.config.set('remember-session.tabs', tabs)
+  return true
 
 restoreSession = ->
   console.log 'Restore session'
@@ -117,7 +118,7 @@ restoreTreeView = ->
 
 Array.prototype.clean = (deleteValue) ->
   for i in [0..this.length]
-    if (this[i] == deleteValue)       
+    if (this[i] == deleteValue)
       this.splice(i, 1);
       i--;
   return this;
