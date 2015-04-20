@@ -1,4 +1,6 @@
-## Remember Session
+## Remember Session (Deprecated)
+
+*Deprecated as of Atom 0.193.0, as this functionality [has been added to Atom core](https://github.com/atom/atom/issues/1603#issuecomment-93599126) and will continue to be refined until 1.0*
 
 A simple package to save your session when you close Atom.  
 Based on
