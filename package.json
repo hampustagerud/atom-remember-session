@@ -6,7 +6,7 @@
   "repository": "https://github.com/hampustagerud/atom-remember-session",
   "license": "MIT",
   "engines": {
-    "atom": ">0.50.0"
+    "atom": ">0.50.0 <0.193.0"
   },
   "dependencies": {}
 }
