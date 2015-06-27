@@ -15,7 +15,7 @@ module.exports =
       $(window).on 'ready', -> restoreTabs()
 
 attachListeners = ->
-  console.log 'Attatch listeners'
+  console.log 'Attach listeners'
   $(window).on 'resize', -> saveDimensions()
   $(window).on 'beforeunload', -> saveSession()
 
