@@ -1,3 +1,9 @@
+THIS PACKAGE IS NOT BEING DEVELOPED ANYMORE AS THE ATOM EDITOR ITSELF NOW HAS THE SAME FUNCTIONALITY AND THIS PLUGIN WAS WRITTEN FOR A PREVIOUS VERSION OF ATOM. THIS PACKAGE IS NOT BEING SUPPORTED BY THE NEW ATOM VERSIONS AND WILL NOT WORK AT ALL!
+===
+For everyone who used this and wanted an update: I wanted to write something new and improved but this project is not needed anymore. Atom has now built-in functionality for this and they are probably doing it smoother. I created this project when I first got access to the Atom beta and it didn´t save my windows, workfolders or tabs. I wanted something that did this and while this was not the best solution it worked somewhat. Back then Atom was not entirely open sourced and the documentation was not very throughout so this became a very "hackish" solution to my problem by basically implementing basic website logic into the package. 
+
+Anyway, I hope some people enjoyed this while it still worked and to all of you who have been frustrated with its inability to work with the newer versions of Atom I offer my deepest apologies. Developing this package was a great learning experience for me and my first contribution to any online project really but there´s no need for this package and therefore I feel that spending more time on this would be a waste! Thank you all.
+
 ## Remember Session
 
 A simple package to save your session when you close Atom.  
