@@ -1,5 +1,7 @@
 {$} = require 'atom'
 
+paneEvent = undefined
+
 module.exports =
   activate: (state) ->
     attachListeners()
@@ -10,7 +12,7 @@ module.exports =
 
     if atom.config.get('remember-session.path')? or atom.config.get('remember-session.tabs')?
       restoreSession()
-      atom.workspaceView.on('pane:active-item-changed', selectTab)
+      paneEvent = atom.workspace.onDidChangeActivePaneItem(selectTab)
       $(window).on 'ready', -> restoreTreeView()
       $(window).on 'ready', -> restoreTabs()
 
@@ -108,7 +110,7 @@ selectTab = (event, item) ->
 
     atom.config.set('remember-session.selectedTab', '')
     atom.config.set('remember-session.tabs', '')
-    atom.workspaceView.off('pane:active-item-changed', selectTab)
+    paneEvent.dispose()
 
 restoreTreeView = ->
   console.log 'Restore treeview'
